@@ -142,8 +142,8 @@ double parcel::getSize() const {
     return size;
 }
 
-void parcel::setSize(double size) {
-    parcel::size = size;
+void parcel::setSize(double local_size) {
+    parcel::size = local_size;
 }
 
 double parcel::getOccupiedArea() const {
@@ -217,8 +217,8 @@ const string &crop::getName() const {
     return name;
 }
 
-void crop::setName(const string &name) {
-    crop::name = name;
+void crop::setName(const string &local_name) {
+    crop::name = local_name;
 }
 
 double crop::getSurfaceFor1Plant() const {
@@ -306,7 +306,7 @@ public:
 int culture::Id = 1;
 
 culture::culture(const crop &plant, parcel &lot, int number)
-        : id_culture(Id++), number_of_plants(number), plant(plant), lot(lot) {
+        : id_culture(Id++), plant(plant), lot(lot), number_of_plants(number) {
     this->plant_type = plant.getName();
     this->plant_id = plant.getPlantId();
     if((lot.getSize() - lot.getOccupiedArea()) < plant.getSurfaceFor1Plant()){
@@ -384,24 +384,24 @@ int culture::getSize() const {
     return size;
 }
 
-void culture::setSize(int size) {
-    culture::size = size;
+void culture::setSize(int local_size) {
+    culture::size = local_size;
 }
 
 const crop &culture::getPlant() const {
     return plant;
 }
 
-void culture::setPlant(const crop &plant) {
-    culture::plant = plant;
+void culture::setPlant(const crop &local_plant) {
+    culture::plant = local_plant;
 }
 
 const parcel &culture::getLot() const {
     return lot;
 }
 
-void culture::setLot(const parcel &lot) {
-    culture::lot = lot;
+void culture::setLot(const parcel &local_lot) {
+    culture::lot = local_lot;
 }
 
 ostream& operator<<(ostream& out, const culture& ob) {
