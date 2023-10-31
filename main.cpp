@@ -12,7 +12,7 @@ private:
     const static string owner;
 
 public:
-    livestock(string name = "unknown", int Weight = 0) : animal_id(number_of_animals) {
+    livestock(const string& name = "unknown", int Weight = 0) : animal_id(number_of_animals) {
         this->animal_name = name;
         this->weight = Weight;
         number_of_animals++;
@@ -31,7 +31,7 @@ public:
     {
         weight = kg;
     }
-    void set_name(string name)
+    void set_name(const string& name)
     {
         animal_name = name;
     }
@@ -83,7 +83,7 @@ private:
     double size;
     double occupied_area;
 public:
-    parcel(double size):parcel_id(Id),occupied_area(0){
+    explicit parcel(double size):parcel_id(Id),occupied_area(0){
         this->size=size;
         Id++;
     }
@@ -114,6 +114,17 @@ public:
 
     static int getId();
     friend ostream &operator<<(ostream& out, const parcel& ob);
+    parcel& operator=(const parcel& other) {
+        if (this == &other) {
+            return *this; // Handle self-assignment
+        }
+        // Copy data members from 'other' to 'this'
+        parcel_id = other.parcel_id;
+        size = other.size;
+        occupied_area = other.occupied_area;
+        return *this;
+    }
+
 
 
 };
@@ -161,7 +172,7 @@ private:
     int plant_id;
     static int Id;
 public:
-    crop(string name="unknown",double suprafata=0,double price = 0):plant_id(Id){
+    crop(const string& name="unknown",double suprafata=0,double price = 0):plant_id(Id){
         Id++;
         this->name = name;
         surface_for_1_plant = suprafata;
@@ -251,10 +262,10 @@ private:
     static int Id;
     string plant_type;
     int plant_id;
-    int number_of_plants;
-    int size;
     crop plant;
     parcel lot;
+    int number_of_plants;
+    int size;
 public:
     culture(const crop &plant,  parcel &lot, int number);
 
@@ -295,7 +306,7 @@ public:
 int culture::Id = 1;
 
 culture::culture(const crop &plant, parcel &lot, int number)
-        : id_culture(Id++), plant(plant), lot(lot), number_of_plants(number) {
+        : id_culture(Id++), number_of_plants(number), plant(plant), lot(lot) {
     this->plant_type = plant.getName();
     this->plant_id = plant.getPlantId();
     if((lot.getSize() - lot.getOccupiedArea()) < plant.getSurfaceFor1Plant()){
