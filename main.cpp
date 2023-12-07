@@ -1,437 +1,403 @@
 #include <iostream>
-#include <string>
+#include "Parcel.h"
+#include "Crop.h"
+#include <memory>
+#include "livestock.h"
+#include "Sheep.h"
+#include "Cow.h"
+#include "Chicken.h"
+#include <vector>
+#include <thread>
+#include <chrono>
+#include <exception>
+#include <mutex>
+#include "Exceptii.h"
+#include "Culture.h"
 
-using namespace std;
-
-class livestock {
+class Owner{
 private:
-    int animal_id;
-    static int number_of_animals;
-    string animal_name;
-    int weight;
-    const static string owner;
-
+    std::string name;
+    long double balance;
+    std::vector<std::shared_ptr<livestock>> Animals;
+    std::vector<std::shared_ptr<parcel>> Lots;
+    std::vector<std::shared_ptr<crop>> Crops;
+    std::vector<Culture> Cultures;
+    std::mutex balanceMutex; // Mutex for synchronizing access to balance
 public:
-    livestock(const string& name = "unknown", int Weight = 0) : animal_id(number_of_animals) {
-        this->animal_name = name;
-        this->weight = Weight;
-        number_of_animals++;
+    Owner(const std::string Name = "Dani", long double Balance = 10000): name(Name),balance(Balance){}
+    ~Owner(){}
+    void Add_lots(std::shared_ptr<parcel> &lot){
+        Lots.push_back((lot));
     }
-    livestock(const livestock &other) : animal_id(other.animal_id), animal_name(other.animal_name), weight(other.weight) {
-
+    void Add_crops(std::shared_ptr<crop> &crop){
+        Crops.push_back(crop);
     }
-    ~livestock() {}
-    void display()
-    {
-        cout<<"Id animal "<<animal_id<<"\n";
-        cout<<"Nume animal "<<animal_name<<"\n";
-        cout<<"Greutate animal "<<weight<<"\n";
-    }
-    void set_weight(int kg)
-    {
-        weight = kg;
-    }
-    void set_name(const string& name)
-    {
-        animal_name = name;
-    }
-    int get_weight()
-    {
-        cout<<weight;
-        return weight;
-    }
-    string get_name()
-    {
-        cout<<animal_name;
-        return animal_name;
-    }
-
-    static int getNumberOfAnimals();
-
-    friend ostream &operator<<(ostream& out, const livestock& ob);
-    livestock &operator=(const livestock &other) {
-        if (this == &other) {
-            return *this;
+    void Add_Culture(){
+        for(int i = 0; i < Lots.size(); i++){
+            std::cout<<"Parcela cu nr: "<<i<<std::endl;
+            Lots[i]->display_parcel();
         }
-        this->animal_id = other.animal_id;
-        this->animal_name = other.animal_name;
-        this->weight = other.weight;
-        return *this;
-    }
-};
+        std::cout<<"Alege o parcela\n";
+        int n;
+        std::cin>>n;
+        if(n < 0 || n > Lots.size())
+            throw std::logic_error("Index invalid\n");
 
-// Initialize the static member
-int livestock::number_of_animals = 0;
-const  string livestock::owner = "Dani";
-
-ostream& operator<<(ostream& out, const livestock& ob) {
-    out<<"Id: "<<ob.animal_id<<endl;
-    out<<"Nume: "<<ob.animal_name<<endl;
-    out<<"Greutate: "<<ob.weight<<endl;
-    return out;
-}
-
-int livestock::getNumberOfAnimals() {
-    return number_of_animals;
-}
-
-//parcela
-class parcel{
-private:
-    int parcel_id;
-    static int Id;
-    double size;
-    double occupied_area;
-public:
-    explicit parcel(double size):parcel_id(Id),occupied_area(0){
-        this->size=size;
-        Id++;
-    }
-    parcel(const parcel& other){
-        parcel_id = other.parcel_id;
-        size = other.size;
-        occupied_area = other.occupied_area;
-    }
-    ~parcel(){}
-    void display_parcel() {
-        cout << "Id zona " << parcel_id << "\n";
-        cout << "Dimensiune parcela " << size << "\n";
-        cout << "Dimensiune ocupata " << occupied_area << "\n";
-
-    }
-
-    int getParcelId() const;
-
-    void setParcelId(int parcelId);
-
-    double getSize() const;
-
-    void setSize(double size);
-
-    double getOccupiedArea() const;
-
-    void setOccupiedArea(double occupiedArea);
-
-    static int getId();
-    friend ostream &operator<<(ostream& out, const parcel& ob);
-    parcel& operator=(const parcel& other) {
-        if (this == &other) {
-            return *this; // Handle self-assignment
+        for(int i = 0; i < Crops.size(); i++){
+            std::cout<<"Planta cu nr: "<<i<<std::endl;
+            Crops[i]->display_crop();
         }
-        // Copy data members from 'other' to 'this'
-        parcel_id = other.parcel_id;
-        size = other.size;
-        occupied_area = other.occupied_area;
-        return *this;
-    }
+        std::cout<<"Alege o planta\n";
+        int m;
+        std::cin>>m;
+        if(m < 0 || m > Crops.size())
+            throw std::logic_error("Index invalid\n");
 
-
-
-};
-int parcel::Id = 1;
-
-int parcel::getParcelId() const {
-    return parcel_id;
-}
-
-void parcel::setParcelId(int parcelId) {
-    parcel_id = parcelId;
-}
-
-double parcel::getSize() const {
-    return size;
-}
-
-void parcel::setSize(double local_size) {
-    parcel::size = local_size;
-}
-
-double parcel::getOccupiedArea() const {
-    return occupied_area;
-}
-
-void parcel::setOccupiedArea(double occupiedArea) {
-    occupied_area = occupied_area + occupiedArea;
-}
-
-int parcel::getId() {
-    return Id;
-}
-ostream& operator<<(ostream& out, const parcel& ob) {
-    out<<"Id: "<<ob.parcel_id<<endl;
-    out<<"Size: "<<ob.size<<endl;
-    out<<"Zona ocupata: "<<ob.occupied_area<<endl;
-    return out;
-}
-//fructe
-class crop{
-private:
-    string name;
-    double surface_for_1_plant;
-    double price_kg;
-    int plant_id;
-    static int Id;
-public:
-    crop(const string& name="unknown",double suprafata=0,double price = 0):plant_id(Id){
-        Id++;
-        this->name = name;
-        surface_for_1_plant = suprafata;
-        price_kg = price;
-    }
-    void display_crop()
-    {
-        cout<<"Nume planta "<<name<<"\n";
-        cout<<"Id"<<plant_id<<"\n";
-        cout<<"Suprafata/planta "<<surface_for_1_plant<<"\n";
-        cout<<"Pret/kg "<<price_kg<<"\n";
-    }
-
-    virtual ~crop();
-
-    const string &getName() const;
-
-    void setName(const string &name);
-
-    double getSurfaceFor1Plant() const;
-
-    void setSurfaceFor1Plant(double surfaceFor1Plant);
-
-    int getPlantId() const;
-
-    void setPlantId(int plantId);
-
-    double getPriceKg() const;
-
-    void setPriceKg(double priceKg);
-
-    static int getId();
-    friend ostream &operator<<(ostream& out, const crop& ob);
-};
-int crop::Id = 1;
-
-crop::~crop() {
-
-}
-
-const string &crop::getName() const {
-    return name;
-}
-
-void crop::setName(const string &local_name) {
-    crop::name = local_name;
-}
-
-double crop::getSurfaceFor1Plant() const {
-    return surface_for_1_plant;
-}
-
-void crop::setSurfaceFor1Plant(double surfaceFor1Plant) {
-    surface_for_1_plant = surfaceFor1Plant;
-}
-
-int crop::getPlantId() const {
-    return plant_id;
-}
-
-void crop::setPlantId(int plantId) {
-    plant_id = plantId;
-}
-
-int crop::getId() {
-    return Id;
-}
-
-double crop::getPriceKg() const {
-    return price_kg;
-}
-
-void crop::setPriceKg(double priceKg) {
-    price_kg = priceKg;
-}
-ostream& operator<<(ostream& out, const crop& ob) {
-    out<<"Id: "<<ob.plant_id<<endl;
-    out<<"nume: "<<ob.name<<endl;
-    out<<"pret/kg: "<<ob.price_kg<<endl;
-    out<<"suprafata/planta: "<<ob.surface_for_1_plant<<endl;
-    return out;
-}
-//cultura plante
-class culture{
-private:
-    int id_culture;
-    static int Id;
-    string plant_type;
-    int plant_id;
-    crop plant;
-    parcel lot;
-    int number_of_plants;
-    int size;
-public:
-    culture(const crop &plant,  parcel &lot, int number);
-
-    virtual ~culture();
-
-    void display() const;
-
-    int getIdCulture() const;
-
-    void setIdCulture(int idCulture);
-
-    const string &getPlantType() const;
-
-    void setPlantType(const string &plantType);
-
-    int getPlantId() const;
-
-    void setPlantId(int plantId);
-
-    int getNumberOfPlants() const;
-
-    void setNumberOfPlants(int numberOfPlants);
-
-    int getSize() const;
-
-    void setSize(int size);
-
-    const crop &getPlant() const;
-
-    void setPlant(const crop &plant);
-
-    const parcel &getLot() const;
-
-    void setLot(const parcel &lot);
-
-    friend ostream &operator<<(ostream& out, const culture& ob);
-};
-int culture::Id = 1;
-
-culture::culture(const crop &plant, parcel &lot, int number)
-        : id_culture(Id++), plant(plant), lot(lot), number_of_plants(number) {
-    this->plant_type = plant.getName();
-    this->plant_id = plant.getPlantId();
-    if((lot.getSize() - lot.getOccupiedArea()) < plant.getSurfaceFor1Plant()){
-        cout<<"nu se poate planta pe acest lot";
-        //setter lot
-    }
-    else if( plant.getSurfaceFor1Plant() * number_of_plants > (lot.getSize() - lot.getOccupiedArea())){
-        cout<<"alege un nr mai mic de plante, mai mic deacat "<<(lot.getSize()-lot.getOccupiedArea())/plant.getSurfaceFor1Plant()<<"\n";
-        //setter numar_plante
         int nr;
-        cin>>nr;
-        if(nr<=(lot.getSize()-lot.getOccupiedArea())/plant.getSurfaceFor1Plant())
-        {
-            number_of_plants = nr;
-            size = plant.getSurfaceFor1Plant() * number_of_plants;
-            lot.setOccupiedArea(size);
+        std::cout<<"Alege nr de plante\n";
+        std::cin>>nr;
+        if(balance < nr * Crops[m]->getCostFor1Plant()){
+            throw NotMoney();
+            //Cultures.pop_back();
+        }
+        if((Lots[n]->getSize() - Lots[n]->getOccupiedArea()) < nr * Crops[m]->getSurfaceFor1Plant()){
+            throw NrTooLarge();
+            //Cultures.pop_back();
         }
         else{
-            cout<<"nr introdus este prea mare";
-            number_of_plants = 0;
+            try {
+                balance -= nr * Crops[m]->getCostFor1Plant();
+                Cultures.push_back(Culture(nr, Lots[n], Crops[m]));
+            } catch (const NotEnoughFor1& e) {
+                std::cerr << "Exception: " << e.what() << std::endl;
+                // Handle the exception appropriately (log, display message, etc.)
+            } catch (const NrTooLarge& e) {
+                std::cerr << "Exception: " << e.what() << std::endl;
+                // Handle the exception appropriately (log, display message, etc.)
+            }
         }
 
     }
-    else {
-        size = plant.getSurfaceFor1Plant() * number_of_plants;
-        lot.setOccupiedArea(size);
+    void sell_crops(){
+        for(int i = 0; i < Cultures.size(); i++){
+            std::cout<<"Id cultura: "<<i<<"\n";
+            Cultures[i].display_culture();
+        }
+        int culture_index;
+        std::cout<<"Alege o cultura:\n";
+        std::cin>>culture_index;
+        std::cout<<"Alege nr de plante pe care le vinzi\n";
+        int numberOfCrops;
+        std::cin>>numberOfCrops;
+        if (culture_index >= 0 && culture_index < Cultures.size()) {
+
+            // Check if there are enough crops to sell
+            if (Cultures[culture_index].getNumberOfPlants() >= numberOfCrops) {
+                // Update balance
+                balance += numberOfCrops * Cultures[culture_index].getPlant()->getPriceUnit();
+
+                // Clear occupied area on the parcel
+                double x = -(Cultures[culture_index].getPlant()->getSurfaceFor1Plant()*numberOfCrops);
+                Cultures[culture_index].getLot()->setOccupiedArea(x);
+
+                // Update number of plants in the culture
+                Cultures[culture_index].setNumberOfPlants(Cultures[culture_index].getNumberOfPlants() - numberOfCrops);
+
+                std::cout << "Crops sold successfully!" << std::endl;
+            }
+            else {
+                std::cout << "Not enough crops in the culture to sell." << std::endl;
+            }
+        }
+        else {
+            std::cout << "Invalid culture index." << std::endl;
+        }
+
     }
+    void Add_Animal(std::shared_ptr<livestock> animal){
+        if(balance < animal->getPrice())
+            throw NotMoney();
+        balance -= animal->getPrice();
+        if(std::dynamic_pointer_cast<Cow> (animal) != NULL){
+            Animals.push_back(std::make_shared<Cow>(*std::dynamic_pointer_cast<Cow>(animal)));
+        }
+        else if(std::dynamic_pointer_cast<Sheep> (animal) != NULL){
+            Animals.push_back(std::make_shared<Sheep>(*std::dynamic_pointer_cast<Sheep>(animal)));
+        }
+        else if(std::dynamic_pointer_cast<Chicken> (animal) != NULL){
+            Animals.push_back(std::make_shared<Chicken>(*std::dynamic_pointer_cast<Chicken>(animal)));
+        }
+    }
+    void Income_Generation(){
+        while (true) {
+            // Increment balance every 10 seconds by 5 for cows and chickens
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+
+            // Lock the mutex to ensure exclusive access to balance
+            std::lock_guard<std::mutex> lock(balanceMutex);
+
+            for (int i = 0; i < Animals.size(); i++) {
+                if (std::dynamic_pointer_cast<Cow>(Animals[i]) != nullptr ||
+                    std::dynamic_pointer_cast<Chicken>(Animals[i]) != nullptr) {
+                    balance += Animals[i]->total_proffit();
+                }
+                if (std::dynamic_pointer_cast<Sheep>(Animals[i]) != nullptr) {
+                    balance += Animals[i]->total_proffit()/7;
+                }
+            }
+
+            // Unlock the mutex when done with balance
+            // The lock_guard's destructor will do this automatically
+        }
+    }
+
+    const std::string &getName() const {
+        return name;
+    }
+
+    long double getBalance() const {
+        return balance;
+    }
+    void display_balance(){
+        std::cout<<"Balanta din cont: "<<this->balance<<"\n";
+    }
+    void display_lots(){
+        for(int i = 0; i < Lots.size(); i++)
+            Lots[i]->display_parcel();
+        std::cout<<std::endl;
+    }
+    void display_crops(){
+        for(int i = 0; i < Crops.size(); i++)
+            Crops[i]->display_crop();
+        std::cout<<std::endl;
+    }
+    void display_cultures(){
+        for(int i = 0; i < Cultures.size(); i++)
+            Cultures[i].display_culture();
+        std::cout<<std::endl;
+    }
+    void display_animals(){
+        for(int i = 0; i < Animals.size(); i++)
+            Animals[i]->display();
+        std::cout<<std::endl;
+    }
+    void display_owner(){
+        std::cout<<this->name<<std::endl;
+        display_balance();
+        display_crops();
+        display_lots();
+        display_animals();
+    }
+};
+
+class Meniu{
+private:
+    Owner *farmer;
+    //std::shared
+public:
+    Meniu(Owner *owner):farmer(owner){
+        //this->start_meniu();
+    }
+    void afiseaza_meniu() const;
+    void start_meniu();
+};
+
+void Meniu::afiseaza_meniu() const {
+    std::cout << "----- MENIU -----\n";
+
+    std::cout << "1. Cumpara un nou tip de planta\n";
+    std::cout << "2. Creaza o cultura noua\n";
+    std::cout << "3. Vanzare plante\n";
+    std::cout << "4. Cumpara un nou animal\n";
+    std::cout << "5. Afiseaza balanta cont-ului\n";
+    std::cout << "6. Afiseaza loturile disponobile\n";
+    std::cout << "7. Afiseaza plantele disponibile\n";
+    std::cout << "8. Afiseaza culturile disponibile\n";
+    std::cout << "9. Afiseaza animalele detinute\n";
+    std::cout << "10. Afiseaza starea fermei\n";
+    std::cout << "0. Inchide aplicatia\n";
 }
+void Meniu::start_meniu() {
+    std::thread incomeThread(&Owner::Income_Generation, farmer);
+    while(true) {
+        this->afiseaza_meniu();
+        int option;
+        std::cout << "Introdu optiunea\n";
+        std::cin >> option;
+        try {
+            switch (option) {
+                case 0: {
+                    return;
+                }
+                case 1: {
+                    std::string nume;
+                    std::cout<<"Introdu numele plantei\n";
+                    std::cin>>nume;
+                    double surface;
+                    std::cout<<"Introdu suprafata ocupata de o planta\n";
+                    std::cin>>surface;
+                    double price;
+                    std::cout<<"Introdu cu cat se vinde o planta\n";
+                    std::cin>>price;
+                    double cost;
+                    std::cout<<"Introdu cu cat se cumpara o planta\n";
+                    std::cin>>cost;
+                    std::shared_ptr<crop> c1 = std::make_shared<crop>(nume,surface,price,cost);
+                    farmer->Add_crops(c1);
+                    break;
+                }
+                case 2:{
+                    try{
+                        farmer->Add_Culture();
+                    }catch(NotEnoughFor1& e){
+                        std::cout<<e.what()<<std::endl;
+                    }
+                    catch(NrTooLarge& e){
+                        std::cout<<e.what()<<std::endl;
+                    }
+                    catch(NotMoney& e){
+                        std::cout<<e.what()<<std::endl;
+                    }
+                    catch(std::logic_error& e){
+                        std::cout<<e.what();
+                    }
+                    break;
+                }
+                case 3:{
+                    farmer->sell_crops();
+                    break;
+                }
+                case 4:{
+                    int option2;
+                    std::cout<<"Alege ce animal vrei sa adaugi\n";
+                    std::cout<<"1. Vaca\n";
+                    std::cout<<"2. Pui\n";
+                    std::cout<<"3. Oaie\n";
+                    try{
+                        std::cin>>option2;
+                        if(option2 != 1 && option2 != 2 && option2 != 3)
+                            throw OptiuneInvalida();
+                    }catch(OptiuneInvalida& e){
+                        std::cout<<e.what()<<std::endl;
+                    }
+                    double proffit;
+                    std::shared_ptr<livestock> animal;
+                    if(option2 == 1){
+                            double milk;
+                            std::cout << "Cati litrii de lapte produce pe zii\n";
+                            std::cin >> milk;
+                            double price_per_litter;
+                            std::cout << "Pretul unui litru de lapte\n";
+                            std::cin >> price_per_litter;
+                            //double proffit;
+                            std::cout << "Profit per litru\n";
+                            std::cin >> proffit;
+                            std::string name;
+                            std::cout << "Numele\n";
+                            std::cin >> name;
+                            int weight;
+                            std::cout << "Greutate\n";
+                            std::cin >> weight;
+                            animal = std::make_shared<Cow>(milk, price_per_litter, proffit, name, weight);
 
-culture::~culture() {
+                    }
+                    if(option2 == 2){
+                            double eggs;
+                            std::cout << "Cate oua produce pe zii\n";
+                            std::cin >> eggs;
+                            double price_per_egg;
+                            std::cout << "Pretul unui ou\n";
+                            std::cin >> price_per_egg;
+                            //double proffit;
+                            std::cout << "Profit per ou\n";
+                            std::cin >> proffit;
+                            std::string name;
+                            std::cout << "Numele\n";
+                            std::cin >> name;
+                            int weight;
+                            std::cout << "Greutate\n";
+                            std::cin >> weight;
+                            animal = std::make_shared<Chicken>(eggs, price_per_egg, proffit, name, weight);
 
-}
+                    }
+                    if(option2 == 3){
+                            double whool;
+                            std::cout << "Cata lana produce pe saptamana\n";
+                            std::cin >> whool;
+                            double price_per_kg;
+                            std::cout << "Pretul unui kg de lana\n";
+                            std::cin >> price_per_kg;
+                            //double proffit;
+                            std::cout << "Profit per kg\n";
+                            std::cin >> proffit;
+                            std::string name;
+                            std::cout << "Numele\n";
+                            std::cin >> name;
+                            int weight;
+                            std::cout << "Greutate\n";
+                            std::cin >> weight;
+                            animal = std::make_shared<Chicken>(whool, price_per_kg, proffit, name, weight);
 
-void culture::display() const {
-    cout << "Culture ID: " << id_culture << endl;
-    cout << "Plant Name: " << plant_id << endl;
-    cout << "Plant Type: " << plant_type << endl;
-    cout << "Number of Plants: " << number_of_plants << endl;
-    cout << "Size: " << size << endl;
-}
+                    }
+                    try{
+                    if(proffit >= 1)
+                        throw Profit_sub_unit();
+                    farmer->Add_Animal(animal);
 
-int culture::getIdCulture() const {
-    return id_culture;
-}
-
-void culture::setIdCulture(int idCulture) {
-    id_culture = idCulture;
-}
-
-const string &culture::getPlantType() const {
-    return plant_type;
-}
-
-void culture::setPlantType(const string &plantType) {
-    plant_type = plantType;
-}
-
-int culture::getPlantId() const {
-    return plant_id;
-}
-
-void culture::setPlantId(int plantId) {
-    plant_id = plantId;
-}
-
-int culture::getNumberOfPlants() const {
-    return number_of_plants;
-}
-
-void culture::setNumberOfPlants(int numberOfPlants) {
-    number_of_plants = numberOfPlants;
-}
-
-int culture::getSize() const {
-    return size;
-}
-
-void culture::setSize(int local_size) {
-    culture::size = local_size;
-}
-
-const crop &culture::getPlant() const {
-    return plant;
-}
-
-void culture::setPlant(const crop &local_plant) {
-    culture::plant = local_plant;
-}
-
-const parcel &culture::getLot() const {
-    return lot;
-}
-
-void culture::setLot(const parcel &local_lot) {
-    culture::lot = local_lot;
-}
-
-ostream& operator<<(ostream& out, const culture& ob) {
-    out<<"Id cultura: "<<ob.id_culture<<endl;
-    out<<"Nume planta: "<<ob.plant_type<<endl;
-    out<<"Id planta "<<ob.plant_id<<endl;
-    out<<"Numar plante: "<<ob.number_of_plants<<endl;
-    out<<"Suprafata cultura: "<<ob.size<<endl;
-
-    // functia returneaza ostream& deci trebuie as returnam obiectul out
-    return out;
+                    }catch(Profit_sub_unit& e){
+                        std::cout<<e.what()<<std::endl;
+                    }
+                    catch(NotMoney& e){
+                        std::cout<<e.what()<<std::endl;
+                    }
+                    break;
+                }
+                case 5:{
+                    farmer->display_balance();
+                    break;
+                }
+                case 6:{
+                    farmer->display_lots();
+                    break;
+                }
+                case 7:{
+                    farmer->display_crops();
+                    break;
+                }
+                case 8:{
+                    farmer->display_cultures();
+                    break;
+                }
+                case 9:{
+                    farmer->display_animals();
+                    break;
+                }
+                case 10:{
+                    farmer->display_owner();
+                    break;
+                }
+                default:
+                    throw OptiuneInvalida();
+            }
+        }catch(OptiuneInvalida& e){
+            std::cout<<e.what()<<std::endl;
+        }
+    }
 }
 int main() {
 
-    crop planta("morcov", 0.04, 1);
-    planta.display_crop();
-    cout<<"\n\n";
-    parcel lot(1000);
-    lot.display_parcel();
-    cout<<"\n\n";
-    culture cultura_1(planta,lot,20000);
-    cout<<cultura_1;
-    cout<<"\n";
-    lot.display_parcel();
-    cout<<"\n";
-    crop planta_2("cartofi",0.1,2.5);
-    planta_2.display_crop();
-    cout<<"\n";
-    culture cultura_2(planta_2,lot,1500);
-    cout<<cultura_2;
-    lot.display_parcel();
+    std::shared_ptr<parcel> Lot1 = std::make_shared<parcel>(1000);
+    std::shared_ptr<parcel> Lot2 = std::make_shared<parcel>(10000);
+    std::shared_ptr<parcel> Lot3 = std::make_shared<parcel>(5000);
+    std::shared_ptr<parcel> Lot4 = std::make_shared<parcel>(900);
+    std::shared_ptr<parcel> Lot5 = std::make_shared<parcel>(4500);
+    Owner farmer;
+    farmer.Add_lots(Lot1);
+    farmer.Add_lots(Lot2);
+    farmer.Add_lots(Lot3);
+    farmer.Add_lots(Lot4);
+    farmer.Add_lots(Lot5);
+    Meniu meniu(&farmer);
+    meniu.start_meniu();
     return 0;
 }
