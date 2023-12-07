@@ -46,7 +46,7 @@ public:
 
     double total_proffit() override;
 
-    int getPrice();
+    int getPrice() override;
 };
 
 
