@@ -13,7 +13,134 @@
 #include <mutex>
 #include "Exceptii.h"
 #include "Culture.h"
+#include "Owner.h"
+/*
+class Profit_sub_unit : public std::exception{
+public:
+    const char* what() const throw(){
+        return "Profitul trebuie sa fie < 1";
+    }
+};
+class OptiuneInvalida : public std::exception{
+public:
+    //suprascriem functia virtuala what() definita in clasa de baza care returneaza o descriere a exceptiei
+    const char* what() const throw(){
+        return "Optiune invalida!";
+    }
+};
+class NotEnoughFor1 : public std::exception{
+public:
+    //suprascriem functia virtuala what() definita in clasa de baza care returneaza o descriere a exceptiei
+    const char* what() const throw() override{
+        return "Nu este destul spatiu pentru 1 planta!\n";
+    }
+};
+class NrTooLarge : public std::exception{
+public:
+    //suprascriem functia virtuala what() definita in clasa de baza care returneaza o descriere a exceptiei
+    const char* what() const throw() override{
+        return "Nr de plante ales este prea mare!\n";
+    }
+};
+class NotMoney : public std::exception{
+public:
+    //suprascriem functia virtuala what() definita in clasa de baza care returneaza o descriere a exceptiei
+    const char* what() const throw() override{
+        return "Nu ai destui bani\n";
+    }
+};
 
+class Culture{
+private:
+    int id_culture;
+    static int Id;
+    long double size;
+    int number_of_plants;
+    std::shared_ptr<parcel> lot;
+    std::shared_ptr<crop> plant;
+public:
+    //constructor fara paramatrii
+    Culture():id_culture(Id++),size(0),number_of_plants(0),
+              lot(std::make_shared<parcel>()), plant(std::make_shared<crop>()){}
+
+    //constructor cu parametrii
+    Culture(int Nr, std::shared_ptr<parcel> &Lot, std::shared_ptr<crop> &Plant):id_culture(Id++),
+                                                                                number_of_plants(Nr),lot(Lot), plant(Plant){
+        if((lot->getSize() - lot->getOccupiedArea()) < plant->getSurfaceFor1Plant()){
+            throw NotEnoughFor1();
+        }
+        else if((plant->getSurfaceFor1Plant() * this->number_of_plants) > (lot->getSize() - lot->getOccupiedArea())){
+            std::cout<<"Alege un nr mai mic de plante decat "
+                     <<(lot->getSize() - lot->getOccupiedArea())/plant->getSurfaceFor1Plant()<<": ";
+            int nr;
+            std::cin>>nr;
+            if(nr <= (lot->getSize() - lot->getOccupiedArea())/plant->getSurfaceFor1Plant()){
+                number_of_plants = nr;
+                this->size = number_of_plants * plant->getSurfaceFor1Plant();
+                lot->setOccupiedArea(size);
+            }
+            else{
+                throw NrTooLarge();
+            }
+
+        }
+        else {
+            size = plant->getSurfaceFor1Plant() * number_of_plants;
+            lot->setOccupiedArea(size);
+        }
+
+    }
+
+    //destructor
+    ~Culture(){}
+
+    void display_culture(){
+        std::cout<<"Cultura cu Id: "<<this->id_culture<<std::endl;
+        std::cout<<"Dimensiunea: "<<this->size<<std::endl;
+        std::cout<<"Numar plante: "<<this->number_of_plants<<std::endl;
+        lot->display_parcel();
+        plant->display_crop();
+    }
+    int get_id_culture() const {
+        return this->id_culture;
+    }
+    long double get_size() const {
+        return this->size;
+    }
+    void set_size(long double size){
+        this->size = size;
+    }
+
+    int getNumberOfPlants() const {
+        return number_of_plants;
+    }
+
+    void setNumberOfPlants(int numberOfPlants) {
+        number_of_plants = numberOfPlants;
+    }
+
+    //setere si gettere pt planta si lot
+
+    std::shared_ptr<parcel> &getLot()  {
+        return lot;
+    }
+
+    void setLot(std::shared_ptr<parcel> &lot) {
+        Culture::lot = lot;
+    }
+
+    std::shared_ptr<crop> &getPlant()  {
+        return plant;
+    }
+
+    void setPlant( std::shared_ptr<crop> &plant) {
+        Culture::plant = plant;
+    }
+
+};
+int Culture::Id = 0;
+*/
+/*
 class Owner{
 private:
     std::string name;
@@ -189,7 +316,7 @@ public:
         display_animals();
     }
 };
-
+*/
 class Meniu{
 private:
     Owner *farmer;
