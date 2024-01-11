@@ -1,7 +1,13 @@
 //
 // Created by danie on 12/6/2023.
 //
-
+/*
+ * pentru fiecare pui se cunoaste:
+ *      -pretul de cumparare
+ *      -numarul de oua produse pe zi
+ *      -profitul ca % castigat in urma vanzrii unui ou
+ *      -functia total_proffit genereaza profitul generat de vanzarea tuturor oualor produse intr-o zi
+ */
 #ifndef OOP_CHICKEN_H
 #define OOP_CHICKEN_H
 

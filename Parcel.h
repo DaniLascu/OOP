@@ -1,7 +1,10 @@
 //
 // Created by danie on 12/6/2023.
 //
-
+/*
+ * loturile de pamant sunt folosite pentru a crea culturi, pe care se planteaza crops
+ * se cunoaste suprafata lotului si suprafata ocupata de culturi
+ */
 #ifndef OOP_PARCEL_H
 #define OOP_PARCEL_H
 

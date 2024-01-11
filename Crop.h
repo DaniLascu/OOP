@@ -1,7 +1,12 @@
 //
 // Created by danie on 12/6/2023.
 //
-
+/*
+ * in cadrul aplicatiei se definesc tipuri de plante
+ * cu aceste plante se creaza culturi
+ * trebuie stabilita suprafata ocupata de o planta, costul de cumparare pentru o planta
+ * si pretul de vanzare pentru o planta
+ */
 #ifndef OOP_CROP_H
 #define OOP_CROP_H
 

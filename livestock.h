@@ -1,7 +1,14 @@
 //
 // Created by danie on 12/6/2023.
 //
-
+/*
+ * clasa livestock este clasa virtuala din care deriva toate animalele
+ * toate animalele produc cate ceva ex. lapte, oua, lana
+ * functia virtuala pura total_proffit asigura ca toate clasele
+ * derivate creaza o metoda prin care sa se afle profitul in urma vanzarii produselor
+ * functia virtuala pura getPrice asigura ca toate clasele derivate implementeaza o
+ * functie prin care sa se afle pretul de cumparare al unui animal
+ */
 #ifndef OOP_LIVESTOCK_H
 #define OOP_LIVESTOCK_H
 

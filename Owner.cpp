@@ -1,6 +1,29 @@
 //
 // Created by danie on 12/8/2023.
 //
+/*
+ * functia addCulture creaza culturi si le introduce in vectorul de culturi
+ * daca in balanta nu sunt suficienti bani pentru a cumpara nr de plante introdus de user
+ * se arunca eroarea NotMoney
+ * daca lotul ales nu are o suprafata libera suficient de mare pentru numarul de plante ales pentru cultura
+ * se arunca eroarea NrTooLarge (s-a ales un nr de plante prea mare penru suprafata disponibila din lot)
+ * functia Add_Animal introduce animale noi in vectorul de animale
+ * daca nu exista suficienti bani pentru a cumpara un anumit animal se arunca eroare NotMoney
+ *
+ * venitul se genereaza din 2 surse:
+ * 1. Vanzarea de plante. cand plante sunt vandute dintr-o cultura balanta contului creste, suprafata culturii
+ * este scazuta cu nr_plante_vandute * suprafata_1_planta si suprafata ocupata a lotului asociat culturii respective
+ * este scazuta cu aceeasi valoare (se elibereaza suprafata ocupata din lot).
+ * Daca dintr-o cultura sunt vandute toate plantele cultura respective este stearsa din vectorul de culturi
+ * 2.functia IncomeGeneration. Cele 3 tipuri de animale posibile sunt pui, vaci si oi.
+ * se considera ca puii si vacile produc oua si lapte zilnic, produse care sunt vandute zilnic.
+ * se considera ca oile produc lana saptamanal, deci lana oilor se va vinde o data la 7 zile.
+ * In logica programului o zi = 10 sec, iar o saptamana = 70 sec
+ * Functia adauga la balanta la fiecare 10 sec profitul produs de fiecare pui si vaca
+ * si o data la 70 de sec profitul produs de fiecara oaie
+ * Am implementat functia update. Aceasta notifica clasa Owner atunci cand o cultura este modificata, afisand-o
+ * Cand o cultura e creata Owner este introdus in lista de observatori
+ */
 #include "Owner.h"
 #include "Exceptii.h"
 #include "livestock.h"
@@ -71,6 +94,14 @@ void Owner::Add_Culture() {
             std::cerr << "Exception: " << e.what() << std::endl;
         }
     }
+    if (!Cultures.empty()) {
+        Culture& lastCulture = Cultures.back();
+        lastCulture.addObserver(this);
+        lastCulture.notifyObservers();  // Notify immediately after setting the observer
+    } else {
+        std::cout << "Cultures vector is empty." << std::endl;
+    }
+
 }
 
 void Owner::sell_crops() {
@@ -95,6 +126,13 @@ void Owner::sell_crops() {
             Cultures[culture_index].getLot()->setOccupiedArea(x);
 
             Cultures[culture_index].setNumberOfPlants(Cultures[culture_index].getNumberOfPlants() - numberOfCrops);
+
+            Cultures[culture_index].set_size(Cultures[culture_index].getNumberOfPlants() * Cultures[culture_index].getPlant()->getSurfaceFor1Plant());
+
+            if (Cultures[culture_index].getNumberOfPlants() == 0) {
+                // Remove the culture from the vector
+                Cultures.erase(Cultures.begin() + culture_index);
+            }
 
             std::cout << "Crops sold successfully!" << std::endl;
         } else {
@@ -180,4 +218,10 @@ void Owner::display_owner() {
     display_crops();
     display_lots();
     display_animals();
+}
+
+void Owner::update(Culture *culture){
+    std::cout<<"NOTIFICARE\n";
+    culture->display_culture();
+    std::cout<<"SFARSIT NOTIFICARE\n";
 }

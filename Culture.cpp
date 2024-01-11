@@ -2,6 +2,15 @@
 // Created by danie on 12/7/2023.
 //
 // Culture.cpp
+/*
+ * la crearea unei culturi pot aparea 2 probleme
+ * 1.nu e destul spatiu pentru 1 planta din tipul ales. se arunca NotEnoughFor1
+ * 2.nr de plante e prea mare pentru cat spatiu mai este pe lotul ales
+ * se da val maxima de plante care pot fi plantate, iar userul e rugat sa reintroduca
+ * un nr mai mic ca val maxima. daca si acum nr de plante introdus este mai mare se arunca NrTooLarge
+ * cand se creaza cultura suprafata culturii este adaugata la suprafata ocupata din lotul asociat culturii
+ * Observatorii sunt notificati atunci cand se creaza cultura sau cand se modifica suprafata(se vand plante)
+ */
 #include "Culture.h"
 #include "Exceptii.h"
 #include "Parcel.h"
@@ -32,6 +41,7 @@ Culture::Culture(int Nr, std::shared_ptr<parcel>& Lot, std::shared_ptr<crop>& Pl
         size = plant->getSurfaceFor1Plant() * number_of_plants;
         lot->setOccupiedArea(size);
     }
+    notifyObservers();
 }
 
 Culture::~Culture() {}
@@ -54,6 +64,7 @@ long double Culture::get_size() const {
 
 void Culture::set_size(long double size) {
     this->size = size;
+    notifyObservers();
 }
 
 int Culture::getNumberOfPlants() const {
@@ -62,6 +73,7 @@ int Culture::getNumberOfPlants() const {
 
 void Culture::setNumberOfPlants(int numberOfPlants) {
     number_of_plants = numberOfPlants;
+    //notifyObservers();
 }
 
 std::shared_ptr<parcel>& Culture::getLot() {
@@ -78,4 +90,14 @@ std::shared_ptr<crop>& Culture::getPlant() {
 
 void Culture::setPlant(std::shared_ptr<crop>& plant) {
     Culture::plant = plant;
+}
+
+void Culture::addObserver(Observer* observer) {
+    observatori.push_back(observer);
+}
+
+void Culture::notifyObservers() {
+    for (Observer* observer : observatori) {
+        observer->update(this);
+    }
 }

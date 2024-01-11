@@ -1,7 +1,16 @@
 //
 // Created by danie on 12/7/2023.
 //
-
+/*
+ * se pot crea culturi. fiecare cultura retine numarul de plante din care este formata
+ * in clasa cultura se mentine un pointer catre lotul de pamant pe care e crescuta cultura
+ * si un pointer catre planta care constituie cultura
+ * dimensiune = nr_plante * suprafata_unei_plante
+ * mai multe culturi pot sa fie situate pe acelasi lot de pamant in limita spatiului disponibil
+ * Am implementat Observer pattern. clasa Culture este subiectul, observat de clasa Owner
+ * Mentine o lista de observatori si apeleaza functia notifyObservers pentru a-i notifica atunci cand s-a
+ * intamplat o schimbare
+ */
 #ifndef OOP_CULTURE_H
 #define OOP_CULTURE_H
 
@@ -10,6 +19,8 @@
 #include <memory>
 #include "Parcel.h"
 #include "Crop.h"
+#include <vector>
+#include "Observer.h"
 
 class Culture {
 private:
@@ -19,6 +30,7 @@ private:
     int number_of_plants;
     std::shared_ptr<parcel> lot;
     std::shared_ptr<crop> plant;
+    std::vector<Observer*> observatori;
 
 public:
     Culture();
@@ -38,6 +50,9 @@ public:
 
     std::shared_ptr<crop>& getPlant();
     void setPlant(std::shared_ptr<crop>& plant);
+
+    void addObserver(Observer* observer);
+    void notifyObservers();
 };
 
 
