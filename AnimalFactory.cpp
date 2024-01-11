@@ -2,58 +2,44 @@
 
 #include "AnimalFactory.h"
 
-std::shared_ptr<livestock> AnimalFactory::build(int optiune, double &profit) {
-    if(optiune == 1) {
-        double milk;
-        std::cout << "Cati litrii de lapte produce pe zii\n";
-        std::cin >> milk;
-        double price_per_litter;
-        std::cout << "Pretul unui litru de lapte\n";
-        std::cin >> price_per_litter;
-        std::cout << "Profit per litru\n";
-        std::cin >> profit;
-        std::string name;
-        std::cout << "Numele\n";
-        std::cin >> name;
-        int weight;
-        std::cout << "Greutate\n";
-        std::cin >> weight;
-        return std::make_shared<Cow>(milk, price_per_litter, profit, name, weight);
-    }
-    if(optiune == 2) {
-        double eggs;
-        std::cout << "Cate oua produce pe zii\n";
-        std::cin >> eggs;
-        double price_per_egg;
-        std::cout << "Pretul unui ou\n";
-        std::cin >> price_per_egg;
-        std::cout << "Profit per ou\n";
-        std::cin >> profit;
-        std::string name;
-        std::cout << "Numele\n";
-        std::cin >> name;
-        int weight;
-        std::cout << "Greutate\n";
-        std::cin >> weight;
-        return std::make_shared<Chicken>(eggs, price_per_egg, profit, name, weight);
-    }
-    if(optiune == 3) {
-        double whool;
-        std::cout << "Cata lana produce pe saptamana\n";
-        std::cin >> whool;
-        double price_per_kg;
-        std::cout << "Pretul unui kg de lana\n";
-        std::cin >> price_per_kg;
-        std::cout << "Profit per kg\n";
-        std::cin >> profit;
-        std::string name;
-        std::cout << "Numele\n";
-        std::cin >> name;
-        int weight;
-        std::cout << "Greutate\n";
-        std::cin >> weight;
-        return std::make_shared<Sheep>(whool, price_per_kg, profit, name, weight);
-    }
+std::shared_ptr<livestock> AnimalFactory::build(int option, double &profit) {
+    double production, price, weight;
+    std::string name;
 
-    return nullptr;
+    if(option == 1)
+        std::cout<<"Cati litrii produce pe zi: ";
+    else if(option == 2)
+        std::cout<<"Cate oua produce pe zi: ";
+    else if(option == 3)
+        std::cout<<"Cate kg de lana produce pe saptamana: ";
+    else return nullptr;
+    std::cin >> production;
+
+    if(option == 1)
+        std::cout<<"Pret per litru: ";
+    else if(option == 2)
+        std::cout<<"Pret per ou: ";
+    else if(option == 3)
+        std::cout<<"Pret per kg: ";
+    std::cin >> price;
+
+    std::cout << "Profit per unit: ";
+    std::cin >> profit;
+
+    std::cout << "Numele: ";
+    std::cin >> name;
+
+    std::cout << "Greutate: ";
+    std::cin >> weight;
+
+    switch (option) {
+        case 1:
+            return std::make_shared<Cow>(production, price, profit, name, weight);
+        case 2:
+            return std::make_shared<Chicken>(production, price, profit, name, weight);
+        case 3:
+            return std::make_shared<Sheep>(production, price, profit, name, weight);
+        default:
+            throw std::invalid_argument("Invalid option");
+    }
 }
