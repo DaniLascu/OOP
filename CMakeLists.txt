@@ -90,7 +90,27 @@ endfunction()
 ###############################################################################
 
 # NOTE: update executable name in .github/workflows/cmake.yml:25 when changing name here
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp
+        Chicken.cpp
+        livestock.h
+        livestock.cpp
+        Chicken.h
+        Cow.h
+        Cow.cpp
+        Sheep.h
+        Sheep.cpp
+        Crop.h
+        Crop.cpp
+        Parcel.h
+        Parcel.cpp
+        Exceptii.h
+        Culture.h
+        Culture.cpp
+        Owner.h
+        Owner.cpp
+        Observer.h
+        AnimalFactory.h
+        AnimalFactory.cpp)
 
 ###############################################################################
 
