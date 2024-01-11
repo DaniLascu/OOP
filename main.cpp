@@ -107,7 +107,7 @@ void Meniu::start_meniu() {
                     }catch(OptiuneInvalida& e){
                         std::cout<<e.what()<<std::endl;
                     }
-                    double proffit;
+                    double proffit = 0;
                     std::shared_ptr<livestock> animal;
                     AnimalFactory f;
                     animal = f.build(option2,proffit);

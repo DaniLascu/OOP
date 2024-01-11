@@ -189,26 +189,38 @@ void Owner::display_balance() {
 }
 
 void Owner::display_lots() {
-    for (int i = 0; i < Lots.size(); i++)
+    std::cout<<"\nLoturile fermei: \n";
+    for (int i = 0; i < Lots.size(); i++) {
         Lots[i]->display_parcel();
+        std::cout<<"\n";
+    }
     std::cout << std::endl;
 }
 
 void Owner::display_crops() {
-    for (int i = 0; i < Crops.size(); i++)
+    std::cout<<"\nPlantele disponibile\n";
+    for (int i = 0; i < Crops.size(); i++) {
         Crops[i]->display_crop();
+        std::cout<<"\n";
+    }
     std::cout << std::endl;
 }
 
 void Owner::display_cultures() {
-    for (int i = 0; i < Cultures.size(); i++)
+    std::cout<<"\nCulturile disponibile\n";
+    for (int i = 0; i < Cultures.size(); i++) {
         Cultures[i].display_culture();
+        std::cout<<"\n";
+    }
     std::cout << std::endl;
 }
 
 void Owner::display_animals() {
-    for (int i = 0; i < Animals.size(); i++)
+    std::cout<<"\nAnimalele detinute\n";
+    for (int i = 0; i < Animals.size(); i++) {
         Animals[i]->display();
+        std::cout<<"\n";
+    }
     std::cout << std::endl;
 }
 
